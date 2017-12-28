@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  creationTimestamp: null
+  labels:
+    run: registrator
+  name: registrator
+spec:
+  selector:
+    matchLabels:
+      run: registrator
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: registrator
+    spec:
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+      hostNetwork: true
+      containers:
+        - name: registrator
+          volumeMounts:
+          - mountPath: /tmp/docker.sock
+            name: docker-sock
+          image: ganeshkaila/registrator:v7
+          command: ["/bin/sh"]
+          args: ["-c", "registrator -useIpFromEnv=POD_IP -deregister=\"always\" -internal consul://localhost:8500"]
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+

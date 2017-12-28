@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: jenkins-master
+  name: jenkins-service
+  namespace: jenkins
+spec:
+  ports:
+    - port: 8080
+      name: jenkins
+    - port: 50000
+      name: agent
+  selector:
+    app: jenkins-master
